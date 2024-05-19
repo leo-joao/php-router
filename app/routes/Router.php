@@ -3,6 +3,7 @@ namespace App\Routes;
 
 use App\Helpers\Request;
 use App\Helpers\Uri;
+use Exception;
 
 class Router
 {
@@ -16,15 +17,16 @@ class Router
 
       $controllerNamespace = self::CONTROLLER_NAMESPACE . '\\' . $controller;
       if (!class_exists($controllerNamespace)) {
-        throw new \Exception("O Controller {$controller} não existe.");
+        throw new Exception("O Controller {$controller} não existe.");
       }
 
-      $controllerInstance = $controllerNamespace;
+      $controllerInstance = new $controllerNamespace;
 
       if (!method_exists($controllerInstance, $method)) {
-        throw new \Exception("O Método {$method} não existe no Controller {$controller}.");
+        throw new Exception("O Método {$method} não existe no Controller {$controller}.");
       }
 
+      $controllerInstance->$method((object) $_REQUEST);
     } catch (\Throwable $th) {
       echo $th->getMessage();
     }
@@ -36,16 +38,12 @@ class Router
     return [
       'get' => [
         '/' => fn() => self::load('HomeController', 'index'),
-        '/contact' => fn() => self::load('ContactController', 'store'),
       ],
       'post' => [
-        '/contact' => fn() => self::load('ContactController', 'store'),
       ],
       'put' => [
-        '/product' => fn() => self::load('ContactController', 'update'),
       ],
       'delete' => [
-
       ],
     ];
   }
@@ -58,17 +56,17 @@ class Router
       $uri = Uri::get('path');
 
       if (!isset($routes[$request])) {
-        throw new \Exception("A rota não existe.");
+        throw new Exception('A rota não existe');
       }
 
       if (!array_key_exists($uri, $routes[$request])) {
-        throw new \Exception("A rota não existe.");
+        throw new Exception('A rota não existe');
       }
 
       $router = $routes[$request][$uri];
 
       if (!is_callable($router)) {
-        throw new \Exception("A rota não existe.");
+        throw new Exception("Route {$uri} is not callable");
       }
 
       $router();
