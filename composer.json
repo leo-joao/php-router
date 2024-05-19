@@ -1,0 +1,17 @@
+{
+    "name": "leo/rotas",
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Léo João",
+            "email": "leo_joao69@hotmail.com"
+        }
+    ],
+    "require": {
+        "league/plates" : "^3.5"
+    }
+}
